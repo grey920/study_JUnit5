@@ -2,6 +2,10 @@ package me.gyuwoon.inflearnthejavatest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -12,18 +16,20 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
+
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {
 
 	@Test
 	@DisplayName("스터디 만들기 😎")
 	void create_new_study() {
-		// Exception이 발생하는 것을 확인하는 방법 => assertThrows
-		// assertThrows(어떤 익셉션이 발생하는지, 어떤 코드를 실행할 때)
-		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Study(-10));
-		// 발생하는 에러메시지를 받아서 내가 기대했던 메시지와 같은지 확인
-		String message = exception.getMessage();
-		assertEquals("limit은 0보다 커야 한다.", message);
+		// 실행하는 코드가 특정한 시간 이내에 반드시 끝나야 하는 경우를 테스트. 
+		// assertTimeout의 단점 : 코드블럭 안이 다 끝날때까지 기다리고 시간을 비교한다. 
+		// 만약 조건의 시간이 되면 바로 테스트를 종료했으면 좋겠다! => assertTimeoutPreemptively
+		assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
+			new Study(10);
+			Thread.sleep(300);
+		});
 	}
 
 	@Test
