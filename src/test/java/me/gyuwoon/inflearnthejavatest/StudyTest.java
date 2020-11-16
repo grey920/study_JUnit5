@@ -1,19 +1,18 @@
 package me.gyuwoon.inflearnthejavatest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
-// 클래스와 메소드 둘 다에 사용 가능
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) // _를 공백으로 치환하는 전략
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class) 
 class StudyTest {
 
 	@Test
@@ -21,7 +20,9 @@ class StudyTest {
 	void create_new_study() {
 		Study study = new Study();
 		assertNotNull(study);
-		System.out.println("create");
+		// Study의 상태값이 DRAFT이어야 한다고 가정.
+		// assertEquals(기대하는 값, 실제 나오는 값, 메시지(String)) // 메시지를 람다식으로 출력할 수 있다.
+		assertEquals(StudyStatus.DRAFT, study.getStatus(), ()->  "스터디를 처음 만들면 상태값이 DRAFT여야 한다");
 	}
 
 	@Test
