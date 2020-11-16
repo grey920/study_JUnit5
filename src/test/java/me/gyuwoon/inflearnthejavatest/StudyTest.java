@@ -2,8 +2,7 @@ package me.gyuwoon.inflearnthejavatest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.function.Supplier;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -23,15 +22,11 @@ class StudyTest {
 		Study study = new Study();
 		assertNotNull(study);
 		// Study의 상태값이 DRAFT이어야 한다고 가정.
-		// assertEquals(기대하는 값, 실제 나오는 값, 메시지(String)) // 메시지를 서플라이어로 출력할 수 있다.
-		assertEquals(StudyStatus.DRAFT, study.getStatus(), new Supplier<String>() {
-
-			@Override
-			public String get() {
-				return "스터디를 처음 만들면 상태값이 DRAFT여야 한다";
-			}
-			
-		});
+		// assertEquals(기대하는 값, 실제 나오는 값, 메시지(String)) 
+		// 메시지를 람다식으로 만들면 문자열 연산을 최대한 필요한 시점(실패했을때에만)에만 한다. 
+		// 그러나 메시지를 String으로 바로 넣으면 테스트시마다 무조건 문자열 연산을 한다. ㅏ따라서 성능상 람다식이 유리하다.
+		assertEquals(StudyStatus.DRAFT, study.getStatus(), ()->  "스터디를 처음 만들면 "+ StudyStatus.DRAFT+" 상태다");
+		
 	}
 
 	@Test
