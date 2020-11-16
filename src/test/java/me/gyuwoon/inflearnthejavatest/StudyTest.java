@@ -1,13 +1,8 @@
 package me.gyuwoon.inflearnthejavatest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.time.Duration;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +24,19 @@ class StudyTest {
 		String test_env = (System.getenv("TEST_ENV"));
 		System.out.println(test_env);
 		assumeTrue("LOCAL".equalsIgnoreCase(test_env));
-		
+
+		assumingThat("LOCAL".equalsIgnoreCase(test_env), () -> {
+			// 환경이 LOCAL일때 실행
+			Study actual = new Study(100);
+			assertThat(actual.getLimit()).isGreaterThan(0);
+		});
+
+		assumingThat("gyuwoon".equalsIgnoreCase(test_env), () -> {
+			// 환경이 gyuwoon일때 실행
+			Study actual = new Study(10);
+			assertThat(actual.getLimit()).isGreaterThan(0);
+		});
+
 		Study actual = new Study(10);
 		assertThat(actual.getLimit()).isGreaterThan(0);
 	}
