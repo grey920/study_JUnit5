@@ -14,23 +14,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
-/* 테스트 태깅과 필터링 
- * 태깅 (@Tag) : 테스트를 그룹화 (모듈별, 단위테스트 / 통합테스트, 걸리는 시간 등의 조건으로)
+/* 커스텀 태그
+ * 메타 애노테이션으로 사용할 수 있다. == 우리가 만든 애노테이션을 사용해도 동일한 기능
  * */
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {
 
-	@Test
+	@FastTest // @Tag("fast") 생략 가능 - ""안에 오타 가능성이 있다.
 	@DisplayName("스터디 만들기 fast")
-	@Tag("fast") // 로컬에서 돌릴때 실행하고 싶고, 
 	void create_new_study() {
 		Study actual = new Study(100);
 		assertThat(actual.getLimit()).isGreaterThan(0);
 	}
 
-	@Test
+	@SlowTest
 	@DisplayName("스터디 만들기 slow ")
-	@Tag("slow") // 로컬에서는 오래걸려서 테스트하기 어렵고 CI같은 원격 서버에서 빌드를 할 때 실행하도록 하고 싶다면 테스트를 나눈다.
 	void create_new_study_again() {
 		System.out.println("create1");
 	}
