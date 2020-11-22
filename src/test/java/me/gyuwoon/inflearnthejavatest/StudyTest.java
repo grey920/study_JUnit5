@@ -12,10 +12,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
@@ -23,29 +21,31 @@ import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-/* 테스트 반복하기
- * 
- * */
+
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class StudyTest {
+@TestInstance(Lifecycle.PER_CLASS) // 클래스마다 인스턴스를 생성(클래스당 하나의 인스턴스) - 모든 테스트가 하나의 인스턴스를 공유 -> 성능상의 장점, 제약이 느슨해짐
+class StudyTest { // 기본은 테스트간의 의존성을 없애기 위해 메소드마다(테스트마다) 인스턴스가 새롭게 생성된다. 
+    
+    
+    int value = 1;
 
     @FastTest
     @DisplayName("스터디 만들기 fast")
     void create_new_study() {
-        Study actual = new Study(100);
+        System.out.println(this);
+        System.out.println(value++);
+        Study actual = new Study(1);
         assertThat(actual.getLimit()).isGreaterThan(0);
     }
 
     @SlowTest
     @DisplayName("스터디 만들기 slow ")
     void create_new_study_again() {
-        System.out.println("create1");
+        System.out.println(this);
+        System.out.println("create1 " + value++);
     }
 
     @DisplayName("스터디 만들기")
@@ -54,6 +54,7 @@ class StudyTest {
     void repeatedTest(RepetitionInfo repetitionInfo) { // RepetitionInfo 타입의 인자를 받으면
                                                        // 이를 통해 현재 몇번째 반복하고 있는지,
                                                        // 총 몇번을 반복해야 하는지 알 수 있다.
+        System.out.println(this);
         System.out
                 .println("test " + repetitionInfo.getCurrentRepetition() + "/" + repetitionInfo.getTotalRepetitions());
     }
@@ -69,6 +70,7 @@ class StudyTest {
        // 2) Study study = new Study(argumentsAccessor.getInteger(0), argumentsAccessor.getString(1));
        // 1) Study study = new Study(limit, name);
         System.out.println(study);
+        System.out.println(this);
     }
     
     /* 커스텀 Accessor 
@@ -99,12 +101,12 @@ class StudyTest {
     }
     
     @BeforeAll
-    static void beforeAll() {
+     void beforeAll() { // @TestInstance(Lifecycle.PER_CLASS)이면 메서드들간 공유하기 때문에 static일 필요가 없다.
         System.out.println("before all");
     }
 
     @AfterAll
-    static void afterAll() {
+     void afterAll() {
         System.out.println("after all");
     }
 
