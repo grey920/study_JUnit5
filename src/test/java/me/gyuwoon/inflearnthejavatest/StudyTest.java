@@ -1,6 +1,7 @@
 package me.gyuwoon.inflearnthejavatest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.converter.SimpleArgumentConverter;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /* 테스트 반복하기
@@ -49,10 +55,22 @@ class StudyTest {
     
     /* ParameterizedTest다른 값들을 가지고 반복 테스트를 하고싶을 때 */
     @DisplayName("스터디 만들기")
-    @ParameterizedTest(name="{index} {displayName} message={0}") // 파라미터를 인덱스로 참조 가능하다.
-    @ValueSource(strings = {"날씨가", "많이", "추워지고", "있네요"}) //파라미터 정의
-    void ParameterizedTest(String message ) { // 파라미터 갯수만큼 테스트 실행
-        System.out.println(message);
+    @ParameterizedTest(name="{index} {displayName} message={0}")
+    @ValueSource(ints = {10, 20, 40}) // 숫자를 study 타입으로 변환하고자 함
+    void ParameterizedTest(@ConvertWith(StudyConverter.class) Study study ) { //@ConvertWith로 커스텀한 converter가 어떤것인지 알려두어야 한다 (괄호 안에는 커스텀한 클래스)
+        // SimpleArgumentConverter : 커스텀한 인자값의 타입을 변환해주는 인터페이스 구현체
+        System.out.println(study.getLimit());
+    }
+    
+    // 커스텀한 구현체 만들기
+    static class StudyConverter extends SimpleArgumentConverter{
+
+        @Override
+        protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+            assertEquals(Study.class, targetType, "Can only convert to Study");
+            return new Study(Integer.parseInt(source.toString())); // Study는 limit을 받는 생성자가 있기 때문에 그대로 쓴다 (문자열로 변환 후 Integer로 변환)
+        }
+        
     }
     
     @BeforeAll
