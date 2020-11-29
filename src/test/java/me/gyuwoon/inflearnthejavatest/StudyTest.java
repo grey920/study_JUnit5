@@ -27,21 +27,9 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/* 태스트 순서
- * 내부적으로 정해진 순서가 있긴 하다. 
- * 하지만 이 순서에 의존해서는 안된다. 
- * 내부 구현 로직에 따라 언제라도 바뀔 수 있다. 
- *  "제대로 작성된 유닛테스트라면(하나의 단위라면), 다른 단위테스트와는 독립적으로 실행되어야 한다."
- *  하지만! 경우에 따라 순서대로 테스트를 작성해야 할 때도 있다. 
- *   - 통합테스트, 기능테스트, 시나리오 테스트 (유즈케이스를 테스트하는 경우)
- *
- * @Order()
- *  - 인스턴스를 독립적으로 만들지만 실행 순서를 정해줄 수 있다. 
- *  - @TestInstance(Lifecycle.PER_CLASS)를 쓰지 않아도 괜찮다. 하지만 같이 쓰면 상태 정보도 공유하면서 순차적으로 실행하는 테스트를 만들 수 있다.
- *  - 단위테스트의 경우는 굳이 순서를 정할 필요는 없을 것 같고, 유즈케이스 기반으로 시나리오 테스트를 만들 때 이용하면 유용.
+/* Junit 설정파일 junit-platform.properties
+ * - (src/test/resources/)에 넣어두면 적용된다.
  */
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-//@TestInstance(Lifecycle.PER_CLASS) 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class) // Orderer를 넘겨준다. 
 class StudyTest {  
     
@@ -50,7 +38,7 @@ class StudyTest {
 
     @Order(2)
     @FastTest
-    @DisplayName("스터디 만들기 fast")
+    //@DisplayName("스터디 만들기 fast")
     void create_new_study() {
         System.out.println(this);
         System.out.println(value++);
@@ -60,7 +48,7 @@ class StudyTest {
 
     @Order(1) // spring이 제공하는 것 쓰지말고!
     @SlowTest
-    @DisplayName("스터디 만들기 slow ")
+    //@DisplayName("스터디 만들기 slow ")
     void create_new_study_again() {
         System.out.println(this);
         System.out.println("create1 " + value++);
