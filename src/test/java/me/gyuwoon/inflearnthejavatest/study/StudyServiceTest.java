@@ -1,7 +1,13 @@
 package me.gyuwoon.inflearnthejavatest.study;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -15,29 +21,54 @@ import me.gyuwoon.inflearnthejavatest.domain.Member;
 import me.gyuwoon.inflearnthejavatest.domain.Study;
 import me.gyuwoon.inflearnthejavatest.member.MemberService;
 
-/*@ExtendWith(MockitoExtension.class)를 해줘야 Mock 애노테이션을 쓸 수 있다.
- * */
+/*
+ * Mock 객체 Stubbing - Stubbing : mock객체 행동을 조작하는 것 모든 Mock객체의 행동 - Null을 리턴한다
+ * (Optional 타입은 Optional.empty) - Primitive 타입은 기본 Primitive값 - 콜렉션은 비어있는 콜렉션 -
+ * Void 메소드는 예외를 던지지 않고 아무런 일도 발생하지 않는다. Mock 객체를 조작해서 - 특정한 매개변수를 받은 경우 특정한 값을
+ * 리턴하거나 예외를 던지도록 만들 수 있다. - Void 메소드 특정 매개변수를 받거나 호출된 경우 예외를 발생시킬 수 있다. - 메소드가
+ * 동일한 매개변수로 여러번 호출될 때 각기 다르게 행동하도록 조작할 수도 있다.
+ */
 @ExtendWith(MockitoExtension.class)
 class StudyServiceTest {
-    /* Mock 객체 만들기 2 - 애노테이션 */
-   // @Mock MemberService memberService;
-    
-   // @Mock StudyRepository studyRepository;
 
-    // 1. StudyService 인스턴스를 만드는 테스트
-    @Test   /* Mock객체 만들기 - 생성자를 사용해서 주입 3*/
-    void createStudyService( @Mock MemberService memberService, @Mock StudyRepository studyRepository) {
-        /* Mock 객체 만들기 1 */
-        // static import로 사용할 수도 있다.
-        //MemberService memberService = mock(MemberService.class);
-        // 내가 만들고자하는 인터페이스 혹은 클래스 타입을 주면 가짜로 mock객체를 만들어줌
-        //StudyRepository studyRepository = Mockito.mock(StudyRepository.class);
-        
-        // MemberService와 StudyRepository가 있어야 StudyService 인스턴스를 만들 수 있는데 둘 다 구현체없이 인터페이스만 있기 때문에 만들 수 없다 -> Mock 쓰기 좋은 상황
-        // 구현체 없이 인터페이스만 있고, 나는 인터페이스를 기반으로 코드를 작성하고 있을 때 제대로 동작하는지 확인하려면 Mocking을 해야한다.
+    @Test
+    void createNewStudy(@Mock MemberService memberService, @Mock StudyRepository studyRepository) {
         StudyService studyService = new StudyService(memberService, studyRepository);
-        
         assertNotNull(studyService);
+
+        /* Stubbing */
+        Member member = new Member();
+        member.setId(1L);
+        member.setEmail("kyewoon@email.com");
+
+        /* 특정한 매개변수를 받은 경우 특정한 값을 리턴하거나 예외를 던지도록 할 수 있다.*/
+        when(memberService.findById(1L)).thenReturn(Optional.of(member));// 1이라는 값으로 호출되면 ->Optional타입의 member객체를 리턴하라
+        // memberService.validate(2L); // 아무일도 일어나지 않는다 (에러X)
+
+        assertEquals("kyewoon@email.com", memberService.findById(1L).get().getEmail());
+
+        /*void 메소드 특정 매개변수를 받거나 호출된 경우 예외를 발생시킬 수 있다.*/
+        doThrow(new IllegalArgumentException()).when(memberService).validate(1L);// 1값으로 validate 메소드가 호출되면 예외를 던지도록
+                                                                                 // stubbing
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            memberService.validate(1L);
+        });
+
+        memberService.validate(2L);
+
+        /* 메소드가 동일한 매개변수로 여러번 호출될 때 각기 ㄱ다르게 행동하도록 조작할 수 있다*/
+        when(memberService.findById(any())).thenReturn(Optional.of(member)).thenThrow(new RuntimeException())
+                .thenReturn(Optional.empty());
+
+        Optional<Member> byId = memberService.findById(1L);
+        assertEquals("kyewoon@email.com", byId.get().getEmail());
+
+        assertThrows(RuntimeException.class, () -> {
+            memberService.findById(2L);
+        });
+
+        assertEquals(Optional.empty(), memberService.findById(3L));
     }
 
 }
