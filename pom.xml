@@ -30,6 +30,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -53,8 +60,8 @@
 					<plugin>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
-						<!-- 실행할 그룹을 fast로 지정 : 빌드시 fast태그가 붙은 것만 실행-->
-						<groups>fast</groups>
+							<!-- 실행할 그룹을 fast로 지정 : 빌드시 fast태그가 붙은 것만 실행 -->
+							<groups>fast</groups>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -67,8 +74,8 @@
 					<plugin>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
-						<!-- 원하는 것들을 명시할 수도 있다 (정의하지 않으면 전부 실행)-->
-						<groups>fast | slow</groups>
+							<!-- 원하는 것들을 명시할 수도 있다 (정의하지 않으면 전부 실행) -->
+							<groups>fast | slow</groups>
 						</configuration>
 					</plugin>
 				</plugins>

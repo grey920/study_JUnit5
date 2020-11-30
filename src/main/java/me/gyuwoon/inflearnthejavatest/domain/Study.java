@@ -1,4 +1,6 @@
-package me.gyuwoon.inflearnthejavatest;
+package me.gyuwoon.inflearnthejavatest.domain;
+
+import me.gyuwoon.inflearnthejavatest.study.StudyStatus;
 
 public class Study {
 
@@ -37,6 +39,11 @@ public class Study {
     @Override
     public String toString() {
         return "Study {status=" + status + ", limit=" + limit + ", name='" + name + "'}";
+    }
+
+    public void setOwner(Member orElseThrow) {
+        // TODO Auto-generated method stub
+        
     }
 
   
