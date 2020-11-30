@@ -14,10 +14,13 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -27,14 +30,39 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/* Junit 설정파일 junit-platform.properties
- * - (src/test/resources/)에 넣어두면 적용된다.
+/* JUnit 5 : 확장모델
+ * - Junit 4의 확장 모델은 @RunWith(Runner), TestRule, MethodRule.
+ * - JUnit 5의 확장 모델은 단 하나, Extension.
+ * 
+ * 확장팩 등록 방법
+- 선언적인 등록 @ExtendWith
+- 프로그래밍 등록 @RegisterExtension
+- 자동 등록 자바 ServiceLoader 이용
+
+ * 확장팩 만드는 방법
+- 테스트 실행 조건
+- 테스트 인스턴스 팩토리
+- 테스트 인스턴스 후-처리기
+- 테스트 매개변수 리졸버
+- 테스트 라이프사이클 콜백
+- 예외 처리
+
  */
+/* 1. 선언적으로 Extension 사용하기 @ExtendWith -> FindSlowTestExtension 이 인스턴스를 커스텀 할 수 없다.
+ *  만약 걸린시간 조건(THRESHOLD) 각자 다르게 값을 넣고 싶을때 선언적으로느 할 수 없다. 
+ *  => 2. 필드에 static으로 정의 - @RegisterExtension
+ * */
+//@ExtendWith(FindSlowTestExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class) // Orderer를 넘겨준다. 
 class StudyTest {  
     
     
     int value = 1;
+    
+    /* 2. 프로그래밍 등록 
+     * - FindSlowTestExtension 인스턴스를 만들어서 등록하는 방법 */
+    @RegisterExtension
+    static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
 
     @Order(2)
     @FastTest
@@ -47,9 +75,11 @@ class StudyTest {
     }
 
     @Order(1) // spring이 제공하는 것 쓰지말고!
-    @SlowTest
+    //@SlowTest
+    @Test
     //@DisplayName("스터디 만들기 slow ")
-    void create_new_study_again() {
+    void create_new_study_again() throws InterruptedException {
+        Thread.sleep(1005L);
         System.out.println(this);
         System.out.println("create1 " + value++);
     }
