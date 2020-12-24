@@ -46,6 +46,11 @@ public class Study {
         
     }
 
+    public Object getOwner() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
   
 	
 	
