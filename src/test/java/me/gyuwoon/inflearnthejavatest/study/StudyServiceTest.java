@@ -18,8 +18,8 @@ import me.gyuwoon.inflearnthejavatest.domain.Member;
 import me.gyuwoon.inflearnthejavatest.domain.Study;
 import me.gyuwoon.inflearnthejavatest.member.MemberService;
 
-/*2020.12.24 
- * 22. BDD 스타일 Mockito API
+/*2020.12.29 
+ * 23. 연습문제
  */
 @ExtendWith(MockitoExtension.class)
 class StudyServiceTest {

@@ -1,19 +1,25 @@
 package me.gyuwoon.inflearnthejavatest.domain;
 
+import java.time.LocalDateTime;
+
 import me.gyuwoon.inflearnthejavatest.study.StudyStatus;
 
 public class Study {
 
-	private StudyStatus status;
+	private StudyStatus status = StudyStatus.DRAFT;
 	
-	private int limit;
+	private int limitCount;
 	
 	private String name;
+	
+	private LocalDateTime openedDateTime;
+	//@ManyToOne
+	private Member owner;
 	
 	
 	
 	public Study(int limit, String name) {
-        this.limit = limit;
+        this.limitCount = limit;
         this.name = name;
     }
 
@@ -21,34 +27,14 @@ public class Study {
 		if(limit < 0) {
 			throw new IllegalArgumentException("limit은 0보다 커야 한다.");
 		}
-		this.limit = limit;
+		this.limitCount = limit;
 	}
 	
-	public StudyStatus getStatus() {
-		return this.status;
-	}
-
-	public int getLimit() {
-		return limit;
-	}
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Study {status=" + status + ", limit=" + limit + ", name='" + name + "'}";
-    }
-
-    public void setOwner(Member orElseThrow) {
-        // TODO Auto-generated method stub
+    // 스터디를 공개하면 스터디의 상태가 공개로 바뀐다.
+    public void open() {
+        this.openedDateTime = LocalDateTime.now();
+        this.status = StudyStatus.OPENED;
         
-    }
-
-    public Object getOwner() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
   
